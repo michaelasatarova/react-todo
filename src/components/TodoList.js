@@ -1,10 +1,12 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Todo from "./Todo";
 import TodoForm from "./TodoForm";
 
 function TodoList() {
   const [todos, setTodos] = useState([]);
+  const [filtredState, setFiltredState] = useState(null);
 
+  //add to list
   const addTodo = (todo) => {
     if (!todo.text || /^\s*$/.test(todo.text)) {
       return;
@@ -12,57 +14,56 @@ function TodoList() {
     const newTodos = [todo, ...todos];
 
     setTodos(newTodos);
-    console.log("newtodo", newTodos)
+    console.log("newtodo", newTodos);
   };
 
-  const updateTodo = (todoId, newValue) => {
-    if (!newValue.text || /^\s*$/.test(newValue.text)) {
-        return;
-      }
-      setTodos(prev => prev.map(item => item.id === todoId ? newValue : item));
-  }
-
-  const updateActivState = (todoId, newState) => {
-    if (newState.active) {
-        return;
-      }
-      setTodos(prev => prev.map(item => item.id === todoId ? newState : item));
-  }
-
-  const removeTodo = id =>{
+  //remove all items from list
+  const removeTodo = () => {
     const removeArr = [];
     setTodos(removeArr);
-    console.log("removeArr", removeArr)
-}
-/*   const removeTodo = id =>{
-      const removeArr = [...todos].filter(todo => todo.id !== id);
-      setTodos(removeArr);
-  } */
+    setFiltredState(removeArr);
+    console.log("removeArr", removeArr);
+  };
 
-/*   const completeTodo = id =>{
-       todos.map(todo => {
-          if(todo.id === id) {
-              todo.isComplete = !todo.isComplete;
-              console.log(todo.isComplete)
-          }
-      })
-  } */
+  const AllItems = () => {
+    return todos;
+  };
+
+  //filter active or inactive task state
+ const filterFunction = (isActive) =>{
+    let myBool = (isActive.toLowerCase() === 'true'); 
+    let filtredState = AllItems().filter(state =>  state.active === myBool );
+    console.log("filtredState", filtredState);
+    return filtredState;
+}
+
+ //send to todos component correct value
+  const HandleFilters = (state) => {
+      console.log(state.target.value)
+      state.target.value !== "all" 
+    ? setFiltredState(filterFunction(state.target.value))
+    : setFiltredState(AllItems());
+    console.log("new", filtredState)
+  };
+
 
   return (
     <div className="form-wrap">
-      <TodoForm onSubmit={addTodo}/>
-      <Todo todos={todos}  removeTodo={removeTodo} updateTodo={updateTodo} updateActivState={updateActivState} />
+      <TodoForm onSubmit={addTodo} />
+      <Todo todos={filtredState ? filtredState : todos } />
       <div className="summary">
-         <div>{todos.length} item left</div>
-         <div className="btn-group">
-             <div>All</div>
-             <div>Active</div>
-             <div>Completed</div>
-         </div>
-         <div onClick={removeTodo}>Clear completed</div>
+        <div>{filtredState ? filtredState.length :todos.length} item</div>
+        <div className="btn-group">
+             <button onClick={HandleFilters} value="all">All</button>
+             <button onClick={HandleFilters} value="true">Active</button>
+             <button onClick={HandleFilters} value="false">Completed</button> 
+        </div>
+        <div onClick={removeTodo}>Clear completed</div>
       </div>
+
     </div>
   );
+
 }
 
 export default TodoList;
