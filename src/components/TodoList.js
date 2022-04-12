@@ -18,7 +18,8 @@ function TodoList() {
   };
 
   //remove all items from list
-  const removeTodo = () => {
+  const removeTodo = (e) => {
+      e.preventDefault()
     const removeArr = [];
     setTodos(removeArr);
     setFiltredState(removeArr);
@@ -39,6 +40,7 @@ function TodoList() {
 
  //send to todos component correct value
   const HandleFilters = (state) => {
+      state.preventDefault();
       console.log(state.target.value)
       state.target.value !== "all" 
     ? setFiltredState(filterFunction(state.target.value))
@@ -58,7 +60,7 @@ function TodoList() {
              <button onClick={HandleFilters} value="true">Active</button>
              <button onClick={HandleFilters} value="false">Completed</button> 
         </div>
-        <div onClick={removeTodo}>Clear completed</div>
+        <button onClick={removeTodo}>Clear completed</button>
       </div>
 
     </div>
